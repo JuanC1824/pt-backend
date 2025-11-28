@@ -33,6 +33,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors().and()
+
         		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Deshabilitamos CSRF (Cross-Site Request Forgery) porque usamos JWT (stateless)
                 .csrf(csrf -> csrf.disable())
@@ -72,13 +74,14 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Permitir el origen de Angular (ajusta el puerto si es necesario)
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); 
+        configuration.setAllowedOrigins(List.of("https://pt-frontend-xb5e.onrender.com"));
         
         // Permitir los métodos HTTP que usas (GET, POST, etc.)
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
         // Permitir las cabeceras, especialmente Authorization para el token JWT
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setExposedHeaders(List.of("Authorization"));
         
         // Permitir credenciales si fuera necesario (opcional en JWT stateless, pero útil a veces)
         configuration.setAllowCredentials(true);
