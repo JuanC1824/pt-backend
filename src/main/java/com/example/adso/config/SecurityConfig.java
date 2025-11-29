@@ -21,27 +21,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Usamos CORS definido en CorsConfig.java
             .cors().and()
-            
-            // Deshabilitamos CSRF porque usamos JWT (stateless)
             .csrf(csrf -> csrf.disable())
-
-            // Reglas de autorización
             .authorizeHttpRequests(authz -> authz
-                    .requestMatchers("/auth/**").permitAll() // Login y registro
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/products").hasAuthority("ADMIN")
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/products").hasAnyAuthority("ADMIN", "USER")
-                    .anyRequest().authenticated()
+                .requestMatchers("/api/auth/**").permitAll()  // Login y register públicos
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/products").hasAuthority("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products").hasAnyAuthority("ADMIN", "USER")
+                .anyRequest().authenticated()
             )
-
-            // Sesiones stateless
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-            // Proveedor de autenticación
             .authenticationProvider(authenticationProvider)
-
-            // Filtro JWT antes del filtro estándar
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

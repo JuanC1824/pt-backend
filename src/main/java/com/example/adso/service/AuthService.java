@@ -53,14 +53,18 @@ public class AuthService {
      * Autentica un usuario (USER o ADMIN) y devuelve un token.
      */
     public AuthResponse login(LoginRequest request) {
-        // Spring Security (AuthenticationManager) se encarga de verificar si el usuario
-        // y la contraseña son correctos (usando el UserDetailsService y PasswordEncoder)
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+        throw new RuntimeException("Usuario o contraseña incorrectos"); // Devuelve 401 desde un @ControllerAdvice o ResponseStatusException
+        }
+
+
 
         // Si la autenticación fue exitosa, buscamos al usuario
         User user = userRepository.findByUsername(request.getUsername())
